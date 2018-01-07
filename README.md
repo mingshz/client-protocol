@@ -19,7 +19,8 @@ cd ../../
 git clone https://github.com/mingshz/swagger-editor.git
 npm run dev
 ```
-- 项目运行成功，在浏览器输入 http://localhost:3200
+- 项目运行成功，在浏览器输入 http://localhost:3200。
+  当终端看到 `build modules[BABEL] Note: The code generator has deoptimised the styling of "D:/repository/swagger-editor/src/plugins/validation/validation.worker.js" as it exceeds the max of "500KB".` 就应该运行成功
 - 将`swagger.yaml`文件中的内容到**Swagger 文档在线编辑器**中查看文档。
 
 #### #TODO
