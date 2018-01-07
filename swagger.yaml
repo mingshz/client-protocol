@@ -1,0 +1,392 @@
+swagger: 2.0-with-api-mocker-1.0
+info:
+  title: ShoppingBeauty-Client API
+  version: 1.0.0
+consumes:
+  - application/json
+basePath: /api/client
+schemes:
+  - https
+  - http
+tags:
+  - name: login
+    description: 登录、注册、权限相关操作
+  - name: user
+    description: 用户相关接口
+  - name: order
+    description: 订单相关接口
+  - name: item
+    description: 项目相关接口
+  - name: payment
+    description: 支付相关接口
+  - name: recharge
+    description: 充值相关接口
+definitions:
+  OK:
+    type: object
+    required:
+      - resCode
+      - resMsg
+    properties:
+      resCode:
+        type: integer
+        description: 状态码
+      resMsg:
+        type: string
+        description: 说明
+      data:
+        type: string
+        description: 返回数据
+  OrderItem:
+    description: 订单里面的项目列表
+    type: object
+    properties:
+      itemId:
+        type: string
+      thumbnail:
+        type: string
+        description: 缩略图
+      title:
+        type: string
+        description: 标题
+      stroe:
+        type: string
+        description: 消费门店
+      quantity:
+        type: number
+        description: 项目消费数量
+      vipPrice:
+        type: number
+        description: 会员价
+        example: 286.99
+      originalPrice:
+        type: number
+        description: 原价
+        example: 1000.99
+  Order:
+    type: object
+    properties:
+      orderId:
+        type: string
+        description: 订单ID
+      completeTime:
+        type: string
+        description: 完成时间
+      orderStatus:
+        type: string
+        description: 订单状态
+        example: 已支付
+      orderStatusCode:
+        type: integer
+        description: 订单状态码
+      store:
+        type: string
+        description: 门店名称
+      payer:
+        type: string
+        description: 支付者
+      payerMobile:
+        type: string
+        description: 支付者电话（以免后续有门店电话）
+      items:
+        type: array
+        description: 订单中消费的项目
+        items:
+          $ref: '#/definitions/OrderItem'
+  User:
+    type: object
+    properties:
+      avatar:
+        type: string
+        description: 微信头像URL
+        example: 'http://www.example.com/xxxx.png'
+      name:
+        type: string
+        description: 用户名称
+        example: 常先生
+      mobile:
+        type: string
+        description: 手机号
+      balance:
+        type: number
+        description: 资金余额
+      isMember:
+        type: boolean
+        description: 是否是会员
+      isRepresent:
+        type: boolean
+        description: 是否是门店代表
+  ItemProperties:
+    description: 项目参数
+    type: object
+    properties:
+      itemId:
+        type: string
+      thumbnail:
+        type: string
+        description: 缩略图
+      title:
+        type: string
+        description: 标题
+      address:
+        type: string
+        description: 最终的最简单的
+      type:
+        type: string
+        description: 项目类型
+        example: 洗车
+      distance:
+        type: number
+        description: 距离
+        example: 1000
+      vipPrice:
+        type: number
+        description: 会员价
+        example: 286.99
+      originalPrice:
+        type: number
+        description: 原价
+        example: 1000.99
+  Item:
+    description: 项目详情
+    type: object
+    allOf:
+      - $ref: '#/definitions/ItemProperties'
+      - type: object
+        properties:
+          details:
+            type: string
+            description: 富文本描述
+  Items:
+    description: 项目列表
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/ItemProperties'
+paths:
+  /isExistence:
+    get:
+      summary: 检查用户是否已经注册
+      description: 可用于区分注册和登录
+      tags:
+        - login
+      responses:
+        '200':
+          description: 根据返回 data 值判断登录注册
+          schema:
+            $ref: '#/definitions/OK'
+  '/isRegister/{mobile}':
+    get:
+      summary: 检查手机号
+      description: 注册的时候异步校验手机号的可用性
+      tags:
+        - login
+      parameters:
+        - in: path
+          name: mobile
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 手机号不存在
+          schema:
+            $ref: '#/definitions/OK'
+        '400':
+          description: 手机号已经注册
+          schema:
+            $ref: '#/definitions/OK'
+  /login:
+    post:
+      summary: 执行登录
+      description: 登录完成之后应该获取跟loginStatus一样的响应；mock时用户名为error就登录失败
+      tags:
+        - login
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - mobile
+              - authCode
+            properties:
+              mobile:
+                type: string
+                description: 会员手机
+              authCode:
+                type: string
+                description: 验证码
+      responses:
+        '200':
+          description: 登录/注册 成功
+          schema:
+            $ref: '#/definitions/OK'
+        '410':
+          description: 无效的登录/注册
+          condition:
+            script: mobile==='15670007176'
+  /register:
+    post:
+      summary: 执行注册
+      description: 注册接口
+      tags:
+        - login
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - mobile
+              - authCode
+              - surname
+              - gender
+            properties:
+              mobile:
+                type: string
+                description: 会员手机
+              authCode:
+                type: string
+                description: 验证码
+              surname:
+                type: string
+                description: 姓氏
+              gender:
+                type: string
+                description: 称谓(性别)。先生 / 女生
+              cdkey:
+                type: string
+                description: 会员卡卡密
+      responses:
+        '200':
+          description: 登录/注册 成功
+          schema:
+            $ref: '#/definitions/OK'
+        '410':
+          description: 无效的登录/注册
+          condition:
+            script: mobile==='15670007176'
+  '/sendAuthCode/{mobile}':
+    get:
+      summary: 发送验证码
+      description: 发送验证码接口
+      tags:
+        - login
+      parameters:
+        - in: path
+          name: mobile
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 发送成功
+          schema:
+            $ref: '#/definitions/OK'
+  /user:
+    get:
+      summary: 获取当前用户个人信息
+      description: 获取当前用户个人信息
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - user
+  /user/vipCard:
+    get:
+      summary: 用户二维码
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - user
+  /orders:
+    get:
+      summary: 获取订单列表
+      description: 获取会员订单列表/门店订单列表
+      parameters:
+        - in: query
+          name: order_type
+          description: 订单类别类型
+          type: string
+          enum:
+            - MEMBER
+            - STORE
+        - in: query
+          name: page
+          description: 页码
+          type: integer
+          default: 1
+        - in: query
+          name: page_size
+          description: 每页多少
+          type: integer
+          default: 10
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Order'
+      tags:
+        - order
+  /items:
+    get:
+      summary: 获取项目列表
+      description: 推荐页面的列表接口，即是项目列表
+      parameters:
+        - in: query
+          name: item_type
+          description: 项目类别类型
+          type: string
+          enum:
+            - HOT
+            - FAVORITE
+            - NEARBY
+        - in: query
+          name: lat
+          description: 纬度
+          type: number
+        - in: query
+          name: lon
+          description: 经度
+          type: number
+        - in: query
+          name: page
+          description: 页码
+          type: integer
+          default: 1
+        - in: query
+          name: page_size
+          description: 每页多少
+          type: integer
+          default: 10
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Items'
+      tags:
+        - item
+  '/items/{itemId}':
+    get:
+      summary: 获取指定项目
+      description: 获取项目详情
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Item'
+      tags:
+        - item
