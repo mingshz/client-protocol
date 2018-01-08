@@ -18,9 +18,7 @@ tags:
   - name: item
     description: 项目相关接口
   - name: payment
-    description: 支付相关接口
-  - name: recharge
-    description: 充值相关接口
+    description: 支付，充值相关接口
 definitions:
   OK:
     type: object
@@ -93,6 +91,41 @@ definitions:
         description: 订单中消费的项目
         items:
           $ref: '#/definitions/OrderItem'
+  OrderById:
+    type: object
+    properties:
+      orderId:
+        type: string
+        description: 订单ID
+      orderStatus:
+        type: string
+        description: 订单状态
+        example: 已支付
+      orderStatusCode:
+        type: integer
+        description: 订单状态码
+      items:
+        type: array
+        description: 订单中消费的项目
+        items:
+          description: 订单里面的项目列表
+          type: object
+          properties:
+            itemId:
+              type: string
+            thumbnail:
+              type: string
+              description: 缩略图
+            title:
+              type: string
+              description: 标题
+            quantity:
+              type: number
+              description: 项目消费数量
+            amount:
+              type: number
+              description: 小计，当前项目消费合计
+              example: 5000
   User:
     type: object
     properties:
@@ -165,6 +198,12 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/ItemProperties'
+  Card:
+    description: 会员卡页返回值
+    type: object
+    properties:
+      qrcode:
+        type: string
 paths:
   /isExistence:
     get:
@@ -303,8 +342,12 @@ paths:
       responses:
         '200':
           description: OK
+          headers:
+            X-Order-Id:
+              type: string
+              description: 生成临时的orderId，别问我为啥这么命名，我看别人都这样
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/Card'
       tags:
         - user
   /orders:
@@ -334,6 +377,23 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Order'
+      tags:
+        - order
+  '/orders/{orderId}':
+    get:
+      summary: 获取订单详情
+      description: 获取支付时候的订单详情
+      parameters:
+        - in: path
+          name: orderId
+          description: 指定订单ID
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OrderById'
       tags:
         - order
   /items:
@@ -381,6 +441,7 @@ paths:
       parameters:
         - in: path
           name: itemId
+          description: 指定项目ID
           required: true
           type: string
       responses:
@@ -390,3 +451,14 @@ paths:
             $ref: '#/definitions/Item'
       tags:
         - item
+  /payments:
+    get:
+      summary: 获取充值列表
+      description: 仅仅是充值列表的接口，余额通过用户信息获取
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Item'
+      tags:
+        - payment
