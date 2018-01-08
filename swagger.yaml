@@ -205,7 +205,7 @@ definitions:
       qrcode:
         type: string
 paths:
-  /isExistence:
+  /isExist:
     get:
       summary: 检查用户是否已经注册
       description: 可用于区分注册和登录
@@ -213,7 +213,7 @@ paths:
         - login
       responses:
         '200':
-          description: 根据返回 data 值判断登录注册
+          description: 根据返回 data 值判断登录注册,若已注册返回登录名
           schema:
             $ref: '#/definitions/OK'
   '/isRegister/{mobile}':
