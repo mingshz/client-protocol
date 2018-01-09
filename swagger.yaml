@@ -232,13 +232,13 @@ paths:
           description: 手机号不存在
           schema:
             $ref: '#/definitions/OK'
-        '400':
+        '417':
           description: 手机号已经注册
           schema:
             $ref: '#/definitions/OK'
-  /login:
+  /auth:
     post:
-      summary: 执行登录
+      summary: 执行注册登录
       description: 登录完成之后应该获取跟loginStatus一样的响应；mock时用户名为error就登录失败
       tags:
         - login
@@ -258,48 +258,19 @@ paths:
               authCode:
                 type: string
                 description: 验证码
-      responses:
-        '200':
-          description: 登录/注册 成功
-          schema:
-            $ref: '#/definitions/OK'
-        '410':
-          description: 无效的登录/注册
-          condition:
-            script: mobile==='15670007176'
-  /register:
-    post:
-      summary: 执行注册
-      description: 注册接口
-      tags:
-        - login
-      parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            type: object
-            required:
-              - mobile
-              - authCode
-              - surname
-              - gender
-            properties:
-              mobile:
-                type: string
-                description: 会员手机
-              authCode:
-                type: string
-                description: 验证码
               surname:
                 type: string
                 description: 姓氏
               gender:
                 type: string
-                description: 称谓(性别)。先生 / 女生
-              cdkey:
+                description: 称谓(性别)。先生(male) / 女生(female)
+              cdKey:
                 type: string
                 description: 会员卡卡密
+              guideUserId:
+                type: integer
+                description: 推荐人编号
+
       responses:
         '200':
           description: 登录/注册 成功
