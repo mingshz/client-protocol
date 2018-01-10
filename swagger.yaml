@@ -17,7 +17,7 @@ tags:
     description: 订单相关接口
   - name: item
     description: 项目相关接口
-  - name: payment
+  - name: capital
     description: 支付，充值相关接口
 definitions:
   OK:
@@ -204,6 +204,32 @@ definitions:
     properties:
       qrcode:
         type: string
+  capitalFlow:
+    description: 资金流水
+    type: array
+    items:
+      type: object
+      properties:
+        time:
+          type: string
+          description: 流水时间
+        title:
+          type: string
+          description: 流水标题
+          example: 龙湖天街消费
+        sum:
+          type: number
+          description: 流水金额
+        type:
+          type: number
+          description: 流水类型
+          enum:
+            - 0 #消费
+            - 1 #充值
+        orderId:
+          type: string
+          description: 消费类型用orderId，其他可为空
+          
 paths:
   /isExist:
     get:
@@ -422,14 +448,42 @@ paths:
             $ref: '#/definitions/Item'
       tags:
         - item
-  /payments:
+  '/capital/flow':
     get:
-      summary: 获取充值列表
-      description: 仅仅是充值列表的接口，余额通过用户信息获取
+      summary: 获取资金流水列表
+      description: 获取用户充值和支付的流水列表
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Item'
+            $ref: '#/definitions/capitalFlow'
       tags:
-        - payment
+        - capital
+  '/capital/deposit':
+    post:
+      summary: 充值接口
+      description: 获取用户充值和支付的流水列表
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              depositSum:
+                type: number
+                description: 充值金额，单笔大于等于5000的整数
+              cdKey:
+                type: string
+                description: 充值卡卡密，与微信支付二选一
+              redirectUrl:
+                type: string
+                description: 支付完成返回的页面地址
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OK'
+      tags:
+        - capital
+  
