@@ -339,6 +339,8 @@ paths:
           description: 发送成功
           schema:
             $ref: '#/definitions/OK'
+        '333':
+          description: 发送验证码失败
   /user:
     get:
       summary: 获取当前用户个人信息
