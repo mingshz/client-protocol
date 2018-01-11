@@ -99,11 +99,12 @@ definitions:
         description: 订单ID
       orderStatus:
         type: string
-        description: 订单状态
-        example: 已支付
-      orderStatusCode:
-        type: integer
-        description: 订单状态码
+        description: 订单状态码（OrderStatus 枚举名）
+        example: success,forPay
+      orderStatusMsg:
+        type: string
+        description: 订单状态中文描述（OrderStatus 枚举message）
+        example: 待付款，已完成
       items:
         type: array
         description: 订单中消费的项目
