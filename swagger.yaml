@@ -303,10 +303,26 @@ paths:
           description: 登录/注册 成功
           schema:
             $ref: '#/definitions/OK'
-        '410':
-          description: 无效的登录/注册
+        '999':
+          description: 手机号或验证码格式错误
           condition:
-            script: mobile==='15670007176'
+            script: mobile==='1567000717'
+        '333':
+          description: 验证码无效
+          condition:
+            script: authCode==='12345'
+        '5000':
+          description: 充值卡无效
+          condition:
+            script: cdKey==='0'
+        '5001':
+          description: 充值卡失效
+        '1006':
+          description: 手机号错误,（openId 和 mobile 对不上）
+        '1001':
+          description: 手机号已经注册
+        '1002':
+          description: 注册信息不完成
   '/sendAuthCode/{mobile}':
     get:
       summary: 发送验证码
