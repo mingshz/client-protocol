@@ -364,6 +364,8 @@ paths:
               description: 生成临时的orderId，别问我为啥这么命名，我看别人都这样
           schema:
             $ref: '#/definitions/Card'
+        '2004':
+          description: 充值后才能激活会员卡
       tags:
         - user
   /orders:
